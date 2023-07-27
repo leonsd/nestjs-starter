@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    environment: dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node 18.16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.16
+
+      - name: Creating .env file
+        uses: weyheyhey/create-dotenv-action@v1
+        env:
+          ^DB_HOST: ${{ secrets.DB_HOST }}
+          ^DB_PORT: ${{ secrets.DB_PORT }}
+          ^DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          ^DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          ^DB_NAME: ${{ secrets.DB_NAME }}
+          ^NODE_ENV: ${{ secrets.NODE_ENV }}
+          ^SEND_CONFIRMATION_EMAIL_QUEUE: ${{ secrets.SEND_CONFIRMATION_EMAIL_QUEUE }}
+          ^JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ^REDIS_HOST: ${{ secrets.REDIS_HOST }}
+          ^REDIS_PORT: ${{ secrets.REDIS_PORT }}
+        with:
+          wildecard: "^"
+          filename: ".env"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      # - name: Run e2e tests
+      #   run: npm run test:e2e
+
+      - name: Typescript build
+        run: npm run build
