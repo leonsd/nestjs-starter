@@ -1,5 +1,6 @@
 import { hashSync } from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import { ApiHideProperty } from '@nestjs/swagger';
 import {
   Entity,
   Column,
@@ -23,10 +24,12 @@ export class User {
 
   @Column()
   @Exclude()
+  @ApiHideProperty()
   password: string;
 
   @Column({ name: 'confirmation_code' })
   @Exclude()
+  @ApiHideProperty()
   confirmationCode: string;
 
   @Column({ name: 'is_confirmed' })
@@ -39,11 +42,13 @@ export class User {
   updatedAt: Date;
 
   @BeforeInsert()
+  @ApiHideProperty()
   private setConfirmationCode = () => {
     this.confirmationCode = generateConfirmationCode();
   };
 
   @BeforeInsert()
+  @ApiHideProperty()
   private hashPassword = () => {
     const salt = 10;
     this.password = hashSync(String(this.password), salt);

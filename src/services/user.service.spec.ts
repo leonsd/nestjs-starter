@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserService } from './user.service';
-import { CreateUserDto } from '../validators/CreateUserDto';
+import { CreateUserDto } from '../validators/create-user.dto';
 import { User } from '../entities/user.entity';
 import { MockFactory } from '../utils/tests/mock-factory';
 import { NotFoundException } from '../exceptions/notfound.exception';
