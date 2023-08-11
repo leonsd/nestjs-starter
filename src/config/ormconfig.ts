@@ -10,13 +10,14 @@ const baseConfig: DataSourceOptions = {
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  entities: ['dist/entities/*.entity.{ts,js}'],
-  migrations: ['dist/config/migrations/*.{ts,js}'],
+  entities: ['src/infra/entities/typeorm/*.entity.{ts,js}'],
+  migrations: ['src/config/migrations/*.{ts,js}'],
 };
 
 const configs = {
   test: {
     ...baseConfig,
+    synchronize: true,
     type: 'sqlite',
   },
   dev: baseConfig,

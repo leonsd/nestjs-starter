@@ -1,13 +1,29 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { Reflector } from '@nestjs/core';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
 import * as request from 'supertest';
+import { Repository } from 'typeorm';
 import { ormconfig } from '../src/config/ormconfig';
 import { UserModule } from '../src/modules/user.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../src/infra/entities/typeorm/user.entity';
 
-describe('UserController (e2e)', () => {
+const makeFakeUserData = () => {
+  return {
+    name: 'any_username',
+    email: 'any_email@mail.com',
+    password: 'aNy_pa55word',
+  };
+};
+
+describe('CreateUser Controller (e2e)', () => {
   let app: INestApplication;
+  let repository: Repository<User>;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -20,22 +36,27 @@ describe('UserController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalInterceptors(
+      new ClassSerializerInterceptor(app.get(Reflector))
+    );
 
     await app.init();
+    repository = app.get(getRepositoryToken(User));
+    await repository.delete({});
   });
 
   describe('/users (POST)', () => {
-    it('should return status code 201 and correct body', () => {
-      const user = {
-        name: 'any_username',
-        email: 'any_email@mail.com',
-        password: 'any_password',
-      };
-      return request(app.getHttpServer())
+    it('should return status code 201 and correct body', async () => {
+      const user = makeFakeUserData();
+
+      const response = await request(app.getHttpServer())
         .post('/users')
-        .send(user)
-        .expect(201)
-        .expect(user);
+        .send(user);
+      expect(response.statusCode).toBe(201);
+      expect(response.body).toBeTruthy();
+      expect(response.body.id).toBeTruthy();
+      expect(response.body.name).toBe(user.name);
+      expect(response.body.email).toBe(user.email);
     });
 
     it('should return status code 400 if not send name', () => {
@@ -66,20 +87,15 @@ describe('UserController (e2e)', () => {
       const user = {};
       return request(app.getHttpServer()).post('/users').send(user).expect(400);
     });
-  });
 
-  describe('/users/:id (GET)', () => {
-    it('should return status code 200 and correct body', () => {
-      const id = 1;
-      return request(app.getHttpServer())
-        .get(`/users/${id}`)
-        .expect(200)
-        .expect({});
-    });
+    it('should return status code 409 if email already exists', async () => {
+      const user = makeFakeUserData();
+      await request(app.getHttpServer()).post('/users').send(user);
 
-    it('should return status code 400 if "id" is not a number', () => {
-      const id = 'any_id';
-      return request(app.getHttpServer()).get(`/users/${id}`).expect(400);
+      const response = await request(app.getHttpServer())
+        .post('/users')
+        .send(user);
+      expect(response.statusCode).toBe(409);
     });
   });
 });

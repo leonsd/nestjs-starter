@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 module.exports = {
-  roots: ['<rootDir>/src'],
-  testRegex: '.*\\.spec\\.ts$',
+  testRegex: '.(spec|test).ts$',
   testEnvironment: 'node',
   coverageDirectory: 'coverage',
   collectCoverageFrom: [

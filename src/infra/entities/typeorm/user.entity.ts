@@ -1,10 +1,16 @@
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty } from '@nestjs/swagger';
-import { Entity, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryColumn,
+} from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
-  @Column()
+  @PrimaryColumn()
   id: string;
 
   @Column()
@@ -23,7 +29,7 @@ export class User {
   @ApiHideProperty()
   confirmationCode: string;
 
-  @Column({ name: 'is_confirmed' })
+  @Column({ name: 'is_confirmed', default: false })
   isConfirmed: boolean;
 
   @CreateDateColumn({ name: 'created_at' })

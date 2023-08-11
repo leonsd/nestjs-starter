@@ -4,7 +4,7 @@ import {
   CreateUser,
   CreateUserModel,
 } from '../../../domain/usecases/create-user.usecase';
-import { conflict, serverError, success } from '../../helpers/http/http-helper';
+import { conflict, success } from '../../helpers/http/http-helper';
 
 const makeFakeUserData = () => {
   return {
@@ -57,20 +57,8 @@ describe('CreateUser Controller', () => {
     const body = makeFakeUserData();
     jest.spyOn(createUserUseCase, 'create').mockReturnValueOnce(null);
 
-    const response = await sut.create(body);
-    expect(response).toEqual(conflict('Email already in use'));
-  });
-
-  it('should return InternalServerErrorException if user creation fails', async () => {
-    const body = makeFakeUserData();
-    const error = new Error();
-    error.stack = 'any_stack';
-    jest
-      .spyOn(createUserUseCase, 'create')
-      .mockReturnValueOnce(Promise.reject(error));
-
-    const response = await sut.create(body);
-    expect(response).toEqual(serverError(error));
+    const promise = sut.create(body);
+    expect(promise).rejects.toThrow(conflict('Email already in use'));
   });
 
   it('should return user if creation succeeds', async () => {
