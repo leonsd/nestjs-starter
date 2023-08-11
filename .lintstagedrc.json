@@ -1,7 +1,3 @@
 {
-  "*.ts": [
-    "npm run lint",
-    "npm run test:staged",
-    "git add"
-  ]
+  "*.ts": ["npm run format", "npm run lint", "npm run test:staged"]
 }

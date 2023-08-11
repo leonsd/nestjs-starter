@@ -1,0 +1,5 @@
+.husky
+.serverless
+node_modules
+build
+coverage
