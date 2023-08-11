@@ -1,20 +1,11 @@
-import { hashSync } from 'bcrypt';
 import { Exclude } from 'class-transformer';
 import { ApiHideProperty } from '@nestjs/swagger';
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  BeforeInsert,
-} from 'typeorm';
-import { generateConfirmationCode } from '../utils/string';
+import { Entity, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: 'users' })
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @Column()
+  id: string;
 
   @Column()
   name: string;
@@ -40,17 +31,4 @@ export class User {
 
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
-
-  @BeforeInsert()
-  @ApiHideProperty()
-  private setConfirmationCode = () => {
-    this.confirmationCode = generateConfirmationCode();
-  };
-
-  @BeforeInsert()
-  @ApiHideProperty()
-  private hashPassword = () => {
-    const salt = 10;
-    this.password = hashSync(String(this.password), salt);
-  };
 }

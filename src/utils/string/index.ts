@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 
-export const generateConfirmationCode = () => {
-  const max = 1000000;
-  return randomInt(max).toString().padStart(6, '0');
+export const randomString = (length: number) => {
+  const max = 1_000_000;
+  return randomInt(max).toString().padStart(length, '0');
 };

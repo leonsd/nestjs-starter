@@ -1,12 +1,24 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserService } from '../services/user.service';
-import { UserController } from '../presentation/controllers/user.controller';
-import { User } from '../entities/user.entity';
+import { CreateUserUseCase } from '../data/usecases/user/create-user.usecase';
+import { UserController } from '../presentation/controllers/user/create-user.controller';
+import { User } from '../infra/entities/typeorm/user.entity';
+import { CreateUser } from '../domain/usecases/create-user.usecase';
+import { CreateUserRepository } from '../data/protocols/db/create-user-repository.protocol';
+import { TypeOrmCreateUserRepository } from '../infra/repositories/db/typeorm/user/create-user.repository';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  providers: [UserService],
+  providers: [
+    {
+      provide: CreateUser,
+      useClass: CreateUserUseCase,
+    },
+    {
+      provide: CreateUserRepository,
+      useClass: TypeOrmCreateUserRepository,
+    },
+  ],
   controllers: [UserController],
 })
 export class UserModule {}
