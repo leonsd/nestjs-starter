@@ -1,4 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateUser } from '../../../domain/usecases/create-user.usecase';
 import { CreateUserDto } from '../../validators/create-user.dto';
@@ -9,7 +15,16 @@ export class UserController {
   constructor(private readonly createUser: CreateUser) {}
 
   @Post()
-  create(@Body() data: CreateUserDto) {
-    return this.createUser.create(data);
+  async create(@Body() data: CreateUserDto) {
+    try {
+      const user = await this.createUser.create(data);
+      if (!user) {
+        return new ConflictException('Email already in use');
+      }
+
+      return user;
+    } catch (error) {
+      return new InternalServerErrorException();
+    }
   }
 }
