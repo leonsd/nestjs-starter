@@ -4,10 +4,7 @@ import {
   CreateUser,
   CreateUserModel,
 } from '../../../domain/usecases/create-user.usecase';
-import {
-  ConflictException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { conflict, serverError, success } from '../../helpers/http/http-helper';
 
 const makeFakeUserData = () => {
   return {
@@ -61,23 +58,25 @@ describe('CreateUser Controller', () => {
     jest.spyOn(createUserUseCase, 'create').mockReturnValueOnce(null);
 
     const response = await sut.create(body);
-    expect(response).toEqual(new ConflictException('Email already in use'));
+    expect(response).toEqual(conflict('Email already in use'));
   });
 
   it('should return InternalServerErrorException if user creation fails', async () => {
     const body = makeFakeUserData();
+    const error = new Error();
+    error.stack = 'any_stack';
     jest
       .spyOn(createUserUseCase, 'create')
-      .mockReturnValueOnce(Promise.reject(new Error()));
+      .mockReturnValueOnce(Promise.reject(error));
 
     const response = await sut.create(body);
-    expect(response).toEqual(new InternalServerErrorException());
+    expect(response).toEqual(serverError(error));
   });
 
   it('should return user if creation succeeds', async () => {
     const body = makeFakeUserData();
 
     const response = await sut.create(body);
-    expect(response).toEqual(makeFakeUser());
+    expect(response).toEqual(success(makeFakeUser()));
   });
 });
