@@ -1,15 +1,10 @@
 import {
   ConflictException,
   InternalServerErrorException,
-  UnauthorizedException,
 } from '@nestjs/common';
 
 export const success = <T>(data: T): T => {
   return data;
-};
-
-export const unauthorized = () => {
-  return new UnauthorizedException();
 };
 
 export const conflict = (message: string) => {

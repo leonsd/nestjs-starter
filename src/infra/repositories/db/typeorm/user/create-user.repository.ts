@@ -6,7 +6,7 @@ import { CreateUserModel } from '../../../../../domain/usecases/create-user.usec
 import { CreateUserRepository } from '../../../../../data/protocols/db/create-user-repository.protocol';
 import { UserModel } from '../../../../../domain/models/user.model';
 import { User } from '../../../../entities/typeorm/user.entity';
-import { randomString } from '../../../../../utils/string';
+import { StringUtils } from '../../../../../utils/string.utils';
 
 @Injectable()
 export class TypeOrmCreateUserRepository implements CreateUserRepository {
@@ -17,7 +17,7 @@ export class TypeOrmCreateUserRepository implements CreateUserRepository {
   async create(userData: CreateUserModel): Promise<UserModel> {
     const additionalProperties = {
       id: randomUUID(),
-      confirmationCode: randomString(6),
+      confirmationCode: StringUtils.random(6),
     };
     const data = Object.assign({}, userData, additionalProperties);
     const user = await this.repository.findOneBy({ email: userData.email });

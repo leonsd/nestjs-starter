@@ -11,9 +11,11 @@ jest.mock('node:crypto', () => {
     randomUUID: () => 'any_uuid',
   };
 });
-jest.mock('../../../../../utils/string', () => {
+jest.mock('../../../../../utils/string.utils', () => {
   return {
-    randomString: () => 'any_confirmationCode',
+    StringUtils: {
+      random: () => 'any_confirmationCode',
+    },
   };
 });
 
