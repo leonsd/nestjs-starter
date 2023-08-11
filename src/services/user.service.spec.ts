@@ -40,7 +40,7 @@ describe('UserService', () => {
       await userService.create(data);
       expect(userRepository.save).toHaveBeenCalledTimes(1);
       expect(userRepository.save).toHaveBeenCalledWith(
-        expect.objectContaining(data),
+        expect.objectContaining(data)
       );
     });
   });

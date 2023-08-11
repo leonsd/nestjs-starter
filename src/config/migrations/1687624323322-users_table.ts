@@ -50,7 +50,7 @@ export class UsersTable1687624323322 implements MigrationInterface {
           },
         ],
       }),
-      true,
+      true
     );
 
     await queryRunner.createIndex(
@@ -58,7 +58,7 @@ export class UsersTable1687624323322 implements MigrationInterface {
       new TableIndex({
         name: 'idx_email',
         columnNames: ['email'],
-      }),
+      })
     );
   }
 

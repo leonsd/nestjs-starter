@@ -3,13 +3,13 @@ import { MockType } from '../../types/mock.type';
 export class MockFactory {
   static getMock<T>(
     type: new (...args: any[]) => T,
-    includes?: string[],
+    includes?: string[]
   ): MockType<T> {
     const mock: MockType<T> = {};
     Object.getOwnPropertyNames(type.prototype)
       .filter(
         (key: string) =>
-          key !== 'constructor' && (!includes || includes.includes(key)),
+          key !== 'constructor' && (!includes || includes.includes(key))
       )
       .map((key: string) => {
         mock[key] = jest.fn();

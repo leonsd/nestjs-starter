@@ -9,7 +9,7 @@ import { ConflictException } from '../exceptions/conflict.exception';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(User) private userRepository: Repository<User>
   ) {}
 
   async create(data: CreateUserDto): Promise<User> {

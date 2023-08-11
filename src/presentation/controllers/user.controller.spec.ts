@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user.controller';
-import { UserService } from '../services/user.service';
-import { UserModule } from '../modules/user.module';
-import { ormconfig } from '../config/ormconfig';
-import { User } from '../entities/user.entity';
+import { UserService } from '../../services/user.service';
+import { UserModule } from '../../modules/user.module';
+import { ormconfig } from '../../config/ormconfig';
+import { User } from '../../entities/user.entity';
 
 describe('UserController', () => {
   let userController: UserController;
