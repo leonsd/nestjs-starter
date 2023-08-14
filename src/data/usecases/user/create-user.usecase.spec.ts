@@ -99,7 +99,10 @@ describe('CreateUser UseCase', () => {
       jest.spyOn(createUserRepository, 'create');
 
       await createUserUseCase.create(data);
-      const userData = Object.assign({}, data, { password: 'hashed_password' });
+      const userData = Object.assign({}, data, {
+        id: 'any_uuid',
+        password: 'hashed_password',
+      });
       expect(createUserRepository.create).toHaveBeenCalledWith(userData);
     });
 
@@ -119,6 +122,16 @@ describe('CreateUser UseCase', () => {
 
       await createUserUseCase.create(data);
       expect(generateSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw if uuid.generate throws', async () => {
+      const data = makeFakeUserData();
+      jest.spyOn(uuid, 'generate').mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      const promise = createUserUseCase.create(data);
+      expect(promise).rejects.toThrow();
     });
   });
 });
