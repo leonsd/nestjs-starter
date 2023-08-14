@@ -29,6 +29,7 @@ class CreateUserRepositoryStub implements CreateUserRepository {
 
 describe('CreateUser UseCase', () => {
   let createUserUseCase: CreateUser;
+  let hasher: Hasher;
   let createUserRepository: CreateUserRepository;
 
   beforeEach(async () => {
@@ -53,10 +54,19 @@ describe('CreateUser UseCase', () => {
     }).compile();
 
     createUserUseCase = app.get<CreateUser>(CreateUser);
+    hasher = app.get<Hasher>(Hasher);
     createUserRepository = app.get<CreateUserRepository>(CreateUserRepository);
   });
 
   describe('create', () => {
+    it('should calls hasher with correct params', async () => {
+      const data = makeFakeUserData();
+      jest.spyOn(hasher, 'hash');
+
+      await createUserUseCase.create(data);
+      expect(hasher.hash).toHaveBeenCalledWith(data.password);
+    });
+
     it('should calls createUserRepository.create with correct params', async () => {
       const data = makeFakeUserData();
       jest.spyOn(createUserRepository, 'create');
