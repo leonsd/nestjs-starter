@@ -10,6 +10,7 @@ import { Hasher } from '../data/protocols/criptography/hasher';
 import { BcryptAdapter } from '../infra/criptography/bcrypt/bcrypt.adapter';
 import { UUID } from '../data/protocols/db/uuid.protocol';
 import { CryptoAdapter } from '../infra/db/crypto.adapter';
+import { ConfirmationCode } from '../infra/db/crypto.adapter.protocols';
 
 const createUserUseCaseFactory = {
   provide: CreateUser,
@@ -29,6 +30,11 @@ const uuidFactory = {
   useClass: CryptoAdapter,
 };
 
+const confirmationCodeFactory = {
+  provide: ConfirmationCode,
+  useClass: CryptoAdapter,
+};
+
 const createUserRepository = {
   provide: CreateUserRepository,
   useClass: TypeOrmCreateUserRepository,
@@ -40,6 +46,7 @@ const createUserRepository = {
     createUserUseCaseFactory,
     hasherFactory,
     uuidFactory,
+    confirmationCodeFactory,
     createUserRepository,
   ],
   controllers: [UserController],

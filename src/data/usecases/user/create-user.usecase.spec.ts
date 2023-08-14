@@ -1,11 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserUseCase } from './create-user.usecase';
 import { Hasher, UUID } from './create-user.protocols';
-import {
-  CreateUser,
-  CreateUserModel,
-} from '../../../domain/usecases/create-user.usecase';
+import { CreateUser, CreateUserModel } from '../../../domain/usecases/create-user.usecase';
 import { CreateUserRepository } from '../../../data/protocols/db/create-user-repository.protocol';
+import { ConfirmationCode } from '../../../infra/db/crypto.adapter.protocols';
 
 jest.mock('bcrypt', () => {
   return {
@@ -37,6 +35,14 @@ const makeUUID = () => {
   };
 };
 
+const makeConfirmationCode = () => {
+  return class ConfirmationCodeStub implements ConfirmationCode {
+    generateConfirmationCode(length: number): string {
+      return 'any_confirmation_code';
+    }
+  };
+};
+
 const makeCreateUserRepository = () => {
   return class CreateUserRepositoryStub implements CreateUserRepository {
     async create(createUserModel: CreateUserModel): Promise<any> {
@@ -54,6 +60,7 @@ describe('CreateUser UseCase', () => {
   let createUserUseCase: CreateUser;
   let hasher: Hasher;
   let uuid: UUID;
+  let confirmationCode: ConfirmationCode;
   let createUserRepository: CreateUserRepository;
 
   beforeEach(async () => {
@@ -72,6 +79,10 @@ describe('CreateUser UseCase', () => {
           useClass: makeUUID(),
         },
         {
+          provide: ConfirmationCode,
+          useClass: makeConfirmationCode(),
+        },
+        {
           provide: CreateUserRepository,
           useClass: makeCreateUserRepository(),
         },
@@ -81,6 +92,7 @@ describe('CreateUser UseCase', () => {
     createUserUseCase = app.get<CreateUser>(CreateUser);
     hasher = app.get<Hasher>(Hasher);
     uuid = app.get<UUID>(UUID);
+    confirmationCode = app.get<ConfirmationCode>(ConfirmationCode);
     createUserRepository = app.get<CreateUserRepository>(CreateUserRepository);
   });
 
@@ -101,6 +113,7 @@ describe('CreateUser UseCase', () => {
       const userData = Object.assign({}, data, {
         id: 'any_uuid',
         password: 'hashed_password',
+        confirmationCode: 'any_confirmation_code',
       });
       expect(createUserRepository.create).toHaveBeenCalledWith(userData);
     });
@@ -131,6 +144,15 @@ describe('CreateUser UseCase', () => {
 
       const promise = createUserUseCase.create(data);
       expect(promise).rejects.toThrow();
+    });
+
+    it('should calls confirmationCode.generateConfirmationCode with correct value', async () => {
+      const data = makeFakeUserData();
+      const generateConfirmationCodeSpy = jest.spyOn(confirmationCode, 'generateConfirmationCode');
+      const length = 6;
+
+      await createUserUseCase.create(data);
+      expect(generateConfirmationCodeSpy).toHaveBeenCalledWith(length);
     });
   });
 });
