@@ -7,9 +7,9 @@ import { ConfigModule } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TypeOrmModule, getRepositoryToken } from '@nestjs/typeorm';
-import * as request from 'supertest';
+import request from 'supertest';
 import { Repository } from 'typeorm';
-import { ormconfig } from '../src/config/ormconfig';
+import { ormconfig } from '../src/main/config/ormconfig';
 import { UserModule } from '../src/modules/user.module';
 import { User } from '../src/infra/entities/typeorm/user.entity';
 

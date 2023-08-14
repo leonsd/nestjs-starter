@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ormconfig } from '../config/ormconfig';
+import { ormconfig } from '../main/config/ormconfig';
 import { UserModule } from './user.module';
 
 @Module({

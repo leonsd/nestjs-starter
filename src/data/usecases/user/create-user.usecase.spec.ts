@@ -1,10 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserUseCase } from './create-user.usecase';
+import { Hasher } from './create-user.protocols';
 import {
   CreateUser,
   CreateUserModel,
 } from '../../../domain/usecases/create-user.usecase';
 import { CreateUserRepository } from '../../../data/protocols/db/create-user-repository.protocol';
+import { BcryptAdapter } from '../../../infra/criptography/bcrypt/bcrypt.adapter';
 
 const makeFakeUserData = () => {
   return {
@@ -35,6 +37,13 @@ describe('CreateUser UseCase', () => {
         {
           provide: CreateUser,
           useClass: CreateUserUseCase,
+        },
+        {
+          provide: Hasher,
+          useFactory: () => {
+            const salt = 12;
+            return new BcryptAdapter(salt);
+          },
         },
         {
           provide: CreateUserRepository,

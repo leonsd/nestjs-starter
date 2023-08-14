@@ -1,4 +1,4 @@
-import * as crypto from 'node:crypto';
+import crypto from 'node:crypto';
 import { StringUtils as sut } from './string.utils';
 
 jest.mock('node:crypto', () => {
