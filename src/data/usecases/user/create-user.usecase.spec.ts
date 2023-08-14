@@ -8,6 +8,12 @@ import {
 import { CreateUserRepository } from '../../../data/protocols/db/create-user-repository.protocol';
 import { BcryptAdapter } from '../../../infra/criptography/bcrypt/bcrypt.adapter';
 
+jest.mock('bcrypt', () => {
+  return {
+    hash: () => 'hashed_password',
+  };
+});
+
 const makeFakeUserData = () => {
   return {
     name: 'any_name',
@@ -72,7 +78,8 @@ describe('CreateUser UseCase', () => {
       jest.spyOn(createUserRepository, 'create');
 
       await createUserUseCase.create(data);
-      expect(createUserRepository.create).toHaveBeenCalledWith(data);
+      const userData = Object.assign({}, data, { password: 'hashed_password' });
+      expect(createUserRepository.create).toHaveBeenCalledWith(userData);
     });
 
     it('should throw if createUserRepository.create throws', async () => {
