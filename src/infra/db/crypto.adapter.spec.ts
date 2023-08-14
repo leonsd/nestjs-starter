@@ -16,12 +16,21 @@ const makeSut = (): SutTypes => {
   return { sut };
 };
 
-describe('Bcrypt Adapter', () => {
-  it('Should call hash', async () => {
+describe('Crypto Adapter', () => {
+  it('Should call randomUUID', async () => {
     const { sut } = makeSut();
     const randomUUIDSpy = jest.spyOn(crypto, 'randomUUID');
 
-    await sut.generate();
+    sut.generate();
     expect(randomUUIDSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('Should throw if randomUUID throws', async () => {
+    const { sut } = makeSut();
+    jest.spyOn(crypto, 'randomUUID').mockImplementationOnce(() => {
+      throw new Error();
+    });
+
+    expect(() => sut.generate()).toThrow();
   });
 });
