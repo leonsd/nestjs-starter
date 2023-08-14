@@ -16,7 +16,7 @@ export class CreateUserUseCase implements CreateUser {
 
   async create(data: CreateUserModel): Promise<UserModel> {
     const hashedPassword = await this.hasher.hash(data.password);
-    const uuid = this.uuid.generate();
+    const uuid = this.uuid.generateUniqueId();
     const userData = Object.assign({}, data, {
       id: uuid,
       password: hashedPassword,

@@ -1,3 +1,3 @@
 export abstract class UUID {
-  abstract generate(): string;
+  abstract generateUniqueId(): string;
 }

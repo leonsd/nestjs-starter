@@ -6,7 +6,6 @@ import {
   CreateUserModel,
 } from '../../../domain/usecases/create-user.usecase';
 import { CreateUserRepository } from '../../../data/protocols/db/create-user-repository.protocol';
-import { BcryptAdapter } from '../../../infra/criptography/bcrypt/bcrypt.adapter';
 
 jest.mock('bcrypt', () => {
   return {
@@ -32,7 +31,7 @@ const makeHasher = () => {
 
 const makeUUID = () => {
   return class UUIDStub implements UUID {
-    generate(): string {
+    generateUniqueId(): string {
       return 'any_uuid';
     }
   };
@@ -116,17 +115,17 @@ describe('CreateUser UseCase', () => {
       await expect(promise).rejects.toThrow();
     });
 
-    it('should calls uuid.generate', async () => {
+    it('should calls uuid.generateUniqueId', async () => {
       const data = makeFakeUserData();
-      const generateSpy = jest.spyOn(uuid, 'generate');
+      const generateUniqueIdSpy = jest.spyOn(uuid, 'generateUniqueId');
 
       await createUserUseCase.create(data);
-      expect(generateSpy).toHaveBeenCalledTimes(1);
+      expect(generateUniqueIdSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should throw if uuid.generate throws', async () => {
+    it('should throw if uuid.generateUniqueId throws', async () => {
       const data = makeFakeUserData();
-      jest.spyOn(uuid, 'generate').mockImplementationOnce(() => {
+      jest.spyOn(uuid, 'generateUniqueId').mockImplementationOnce(() => {
         throw new Error();
       });
 
