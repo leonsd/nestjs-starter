@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserRepository, Hasher } from './create-user.protocols';
+import { CreateUserRepository, Hasher, UUID } from './create-user.protocols';
 import {
   CreateUser,
   CreateUserModel,
@@ -10,6 +10,7 @@ import { UserModel } from '../../../domain/models/user.model';
 export class CreateUserUseCase implements CreateUser {
   constructor(
     private readonly hasher: Hasher,
+    private readonly uuid: UUID,
     private readonly createUserRepository: CreateUserRepository
   ) {}
 

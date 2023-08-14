@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserUseCase } from './create-user.usecase';
-import { Hasher } from './create-user.protocols';
+import { Hasher, UUID } from './create-user.protocols';
 import {
   CreateUser,
   CreateUserModel,
@@ -22,16 +22,34 @@ const makeFakeUserData = () => {
   };
 };
 
-class CreateUserRepositoryStub implements CreateUserRepository {
-  async create(createUserModel: CreateUserModel): Promise<any> {
-    return {
-      id: 'any_id',
-      name: 'any_name',
-      email: 'any_email@mail.com',
-      password: 'any_password',
-    };
-  }
-}
+const makeHasher = () => {
+  return class hasherStub implements Hasher {
+    hash(value: string): Promise<string> {
+      return Promise.resolve('hashed_password');
+    }
+  };
+};
+
+const makeUUID = () => {
+  return class UUIDStub implements UUID {
+    generate(): string {
+      return 'any_uuid';
+    }
+  };
+};
+
+const makeCreateUserRepository = () => {
+  return class CreateUserRepositoryStub implements CreateUserRepository {
+    async create(createUserModel: CreateUserModel): Promise<any> {
+      return {
+        id: 'any_id',
+        name: 'any_name',
+        email: 'any_email@mail.com',
+        password: 'any_password',
+      };
+    }
+  };
+};
 
 describe('CreateUser UseCase', () => {
   let createUserUseCase: CreateUser;
@@ -47,14 +65,15 @@ describe('CreateUser UseCase', () => {
         },
         {
           provide: Hasher,
-          useFactory: () => {
-            const salt = 12;
-            return new BcryptAdapter(salt);
-          },
+          useClass: makeHasher(),
+        },
+        {
+          provide: UUID,
+          useClass: makeUUID(),
         },
         {
           provide: CreateUserRepository,
-          useClass: CreateUserRepositoryStub,
+          useClass: makeCreateUserRepository(),
         },
       ],
     }).compile();
