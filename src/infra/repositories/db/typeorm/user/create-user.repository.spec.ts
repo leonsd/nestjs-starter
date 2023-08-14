@@ -3,27 +3,19 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { TypeOrmCreateUserRepository } from './create-user.repository';
 import { CreateUserRepository } from '../../../../../data/protocols/db/create-user-repository.protocol';
 import { UserModel } from '../../../../../domain/models/user.model';
-import { CreateUserModel } from '../../../../../domain/usecases/create-user.usecase';
+import {
+  SensitiveInfoModel,
+  CreateUserModel,
+} from '../../../../../domain/usecases/create-user.usecase';
 import { User } from '../../../../entities/typeorm/user.entity';
 
-jest.mock('node:crypto', () => {
+const makeFakeUserData = (): CreateUserModel & SensitiveInfoModel => {
   return {
-    randomUUID: () => 'any_uuid',
-  };
-});
-jest.mock('../../../../../utils/string.utils', () => {
-  return {
-    StringUtils: {
-      random: () => 'any_confirmationCode',
-    },
-  };
-});
-
-const makeFakeUserData = (): CreateUserModel => {
-  return {
+    id: 'any_uuid',
     name: 'any_name',
     email: 'any_email',
-    password: 'any_password',
+    password: 'hashed_password',
+    confirmationCode: 'any_confirmation_code',
   };
 };
 
@@ -73,41 +65,37 @@ describe('CreateUser Repository', () => {
   });
 
   it('should call findOneBy with correct values', async () => {
-    const fakeUser = makeFakeUserData();
+    const fakeUserData = makeFakeUserData();
     jest.spyOn(repository, 'findOneBy');
 
-    await sut.create(fakeUser);
+    await sut.create(fakeUserData);
     expect(repository.findOneBy).toHaveBeenCalledWith({
-      email: fakeUser.email,
+      email: fakeUserData.email,
     });
   });
 
   it('should return null if findOneBy returns user', async () => {
-    const fakeUser = makeFakeUserData();
+    const fakeUserData = makeFakeUserData();
     jest.spyOn(repository, 'findOneBy').mockReturnValueOnce(Promise.resolve(makeFakeUser()));
 
-    const user = await sut.create(fakeUser);
+    const user = await sut.create(fakeUserData);
     expect(user).toBeNull();
   });
 
   it('should call save with correct values', async () => {
-    const fakeUser = makeFakeUserData();
+    const fakeUserData = makeFakeUserData();
     jest.spyOn(repository, 'findOneBy').mockReturnValueOnce(null);
     jest.spyOn(repository, 'save');
 
-    await sut.create(fakeUser);
-    expect(repository.save).toHaveBeenCalledWith({
-      id: 'any_uuid',
-      confirmationCode: 'any_confirmationCode',
-      ...fakeUser,
-    });
+    await sut.create(fakeUserData);
+    expect(repository.save).toHaveBeenCalledWith(fakeUserData);
   });
 
   it('should return new user if create on success', async () => {
-    const fakeUser = makeFakeUserData();
+    const fakeUserData = makeFakeUserData();
     const createdUser = makeFakeUser();
 
-    const user = await sut.create(fakeUser);
+    const user = await sut.create(fakeUserData);
     expect(user).toEqual(createdUser);
   });
 });
