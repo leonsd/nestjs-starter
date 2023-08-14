@@ -8,6 +8,8 @@ import { CreateUserRepository } from '../data/protocols/db/create-user-repositor
 import { TypeOrmCreateUserRepository } from '../infra/repositories/db/typeorm/user/create-user.repository';
 import { Hasher } from '../data/protocols/criptography/hasher';
 import { BcryptAdapter } from '../infra/criptography/bcrypt/bcrypt.adapter';
+import { UUID } from '../data/protocols/db/uuid.protocol';
+import { CryptoAdapter } from '../infra/db/crypto.adapter';
 
 const createUserUseCaseFactory = {
   provide: CreateUser,
@@ -22,6 +24,11 @@ const hasherFactory = {
   },
 };
 
+const uuidFactory = {
+  provide: UUID,
+  useClass: CryptoAdapter,
+};
+
 const createUserRepository = {
   provide: CreateUserRepository,
   useClass: TypeOrmCreateUserRepository,
@@ -29,7 +36,12 @@ const createUserRepository = {
 
 @Module({
   imports: [TypeOrmModule.forFeature([User])],
-  providers: [createUserUseCaseFactory, hasherFactory, createUserRepository],
+  providers: [
+    createUserUseCaseFactory,
+    hasherFactory,
+    uuidFactory,
+    createUserRepository,
+  ],
   controllers: [UserController],
 })
 export class UserModule {}
