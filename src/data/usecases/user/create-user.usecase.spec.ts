@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateUserUseCase } from './create-user.usecase';
-import { Hasher, UUID } from './create-user.protocols';
+import { Hasher, UUID } from './create-user.usecase.protocols';
 import { CreateUser, CreateUserModel } from '../../../domain/usecases/create-user.usecase';
 import { CreateUserRepository } from '../../../data/protocols/db/create-user-repository.protocol';
 import { ConfirmationCode } from '../../../infra/db/crypto.adapter.protocols';

@@ -3,10 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import {
   CreateUserModel,
+  CreateUserRepository,
   SensitiveInfoModel,
-} from '../../../../../domain/usecases/create-user.usecase';
-import { CreateUserRepository } from '../../../../../data/protocols/db/create-user-repository.protocol';
-import { UserModel } from '../../../../../domain/models/user.model';
+  UserModel,
+} from './create-user.repository.protocols';
 import { User } from '../../../../entities/typeorm/user.entity';
 
 @Injectable()

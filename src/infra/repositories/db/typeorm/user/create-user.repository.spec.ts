@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { TypeOrmCreateUserRepository } from './create-user.repository';
 import { CreateUserRepository } from '../../../../../data/protocols/db/create-user-repository.protocol';
 import { UserModel } from '../../../../../domain/models/user.model';
@@ -32,19 +33,21 @@ const makeFakeUser = (): UserModel => {
   };
 };
 
-class RepositoryStub {
-  async findOneBy(): Promise<UserModel> {
-    return null;
-  }
+const makeRepositoryStub = () => {
+  return class RepositoryStub {
+    async findOneBy(): Promise<UserModel> {
+      return null;
+    }
 
-  async save(): Promise<UserModel> {
-    return makeFakeUser();
-  }
-}
+    async save(): Promise<UserModel> {
+      return makeFakeUser();
+    }
+  };
+};
 
 describe('CreateUser Repository', () => {
   let sut: CreateUserRepository;
-  let repository: RepositoryStub;
+  let repository: Repository<User>;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
@@ -55,7 +58,7 @@ describe('CreateUser Repository', () => {
         },
         {
           provide: getRepositoryToken(User),
-          useClass: RepositoryStub,
+          useClass: makeRepositoryStub(),
         },
       ],
     }).compile();

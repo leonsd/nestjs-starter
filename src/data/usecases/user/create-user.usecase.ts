@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUserRepository, Hasher, UUID } from './create-user.protocols';
 import {
+  CreateUserRepository,
+  Hasher,
+  UUID,
   CreateUser,
   CreateUserModel,
   SensitiveInfoModel,
-} from '../../../domain/usecases/create-user.usecase';
+  ConfirmationCode,
+} from './create-user.usecase.protocols';
 import { UserModel } from '../../../domain/models/user.model';
-import { ConfirmationCode } from '../../../infra/db/crypto.adapter.protocols';
 
 @Injectable()
 export class CreateUserUseCase implements CreateUser {
