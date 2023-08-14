@@ -8,10 +8,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
-  const config = new DocumentBuilder()
-    .setTitle('Nestjs starter')
-    .setVersion('1.0')
-    .build();
+  const config = new DocumentBuilder().setTitle('Nestjs starter').setVersion('1.0').build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);

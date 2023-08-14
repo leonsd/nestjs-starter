@@ -1,9 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './create-user.controller';
-import {
-  CreateUser,
-  CreateUserModel,
-} from '../../../domain/usecases/create-user.usecase';
+import { CreateUser, CreateUserModel } from '../../../domain/usecases/create-user.usecase';
 import { conflict, success } from '../../helpers/http/http-helper';
 
 const makeFakeUserData = () => {

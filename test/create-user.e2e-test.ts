@@ -1,8 +1,4 @@
-import {
-  ClassSerializerInterceptor,
-  INestApplication,
-  ValidationPipe,
-} from '@nestjs/common';
+import { ClassSerializerInterceptor, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -36,9 +32,7 @@ describe('CreateUser Controller (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe());
-    app.useGlobalInterceptors(
-      new ClassSerializerInterceptor(app.get(Reflector))
-    );
+    app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
     await app.init();
     repository = app.get(getRepositoryToken(User));
@@ -49,9 +43,7 @@ describe('CreateUser Controller (e2e)', () => {
     it('should return status code 201 and correct body', async () => {
       const user = makeFakeUserData();
 
-      const response = await request(app.getHttpServer())
-        .post('/users')
-        .send(user);
+      const response = await request(app.getHttpServer()).post('/users').send(user);
       expect(response.statusCode).toBe(201);
       expect(response.body).toBeTruthy();
       expect(response.body.id).toBeTruthy();
@@ -92,9 +84,7 @@ describe('CreateUser Controller (e2e)', () => {
       const user = makeFakeUserData();
       await request(app.getHttpServer()).post('/users').send(user);
 
-      const response = await request(app.getHttpServer())
-        .post('/users')
-        .send(user);
+      const response = await request(app.getHttpServer()).post('/users').send(user);
       expect(response.statusCode).toBe(409);
     });
   });

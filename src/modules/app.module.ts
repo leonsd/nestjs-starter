@@ -5,10 +5,6 @@ import { ormconfig } from '../main/config/ormconfig';
 import { UserModule } from './user.module';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    TypeOrmModule.forRoot(ormconfig),
-    UserModule,
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true }), TypeOrmModule.forRoot(ormconfig), UserModule],
 })
 export class AppModule {}

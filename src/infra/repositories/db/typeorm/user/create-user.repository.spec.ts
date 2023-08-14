@@ -84,9 +84,7 @@ describe('CreateUser Repository', () => {
 
   it('should return null if findOneBy returns user', async () => {
     const fakeUser = makeFakeUserData();
-    jest
-      .spyOn(repository, 'findOneBy')
-      .mockReturnValueOnce(Promise.resolve(makeFakeUser()));
+    jest.spyOn(repository, 'findOneBy').mockReturnValueOnce(Promise.resolve(makeFakeUser()));
 
     const user = await sut.create(fakeUser);
     expect(user).toBeNull();

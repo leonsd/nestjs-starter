@@ -24,12 +24,12 @@ export class CreateUserUseCase implements CreateUser {
   }
 
   private prepareUserData(
-    data: CreateUserModel,
+    originalUserData: CreateUserModel,
     hashedPassword: string,
     uuid: string,
     confirmationCode: string
   ) {
-    const userData = Object.assign({}, data, {
+    const userData = Object.assign({}, originalUserData, {
       id: uuid,
       password: hashedPassword,
       confirmationCode,

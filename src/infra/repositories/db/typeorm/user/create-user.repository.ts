@@ -10,9 +10,7 @@ import { StringUtils } from '../../../../../utils/string.utils';
 
 @Injectable()
 export class TypeOrmCreateUserRepository implements CreateUserRepository {
-  constructor(
-    @InjectRepository(User) private readonly repository: Repository<User>
-  ) {}
+  constructor(@InjectRepository(User) private readonly repository: Repository<User>) {}
 
   async create(userData: CreateUserModel): Promise<UserModel> {
     const additionalProperties = {
