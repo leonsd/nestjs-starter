@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserRepository, Hasher, UUID } from './create-user.protocols';
-import { CreateUser, CreateUserModel } from '../../../domain/usecases/create-user.usecase';
+import {
+  CreateUser,
+  CreateUserModel,
+  SensitiveInfoModel,
+} from '../../../domain/usecases/create-user.usecase';
 import { UserModel } from '../../../domain/models/user.model';
 import { ConfirmationCode } from '../../../infra/db/crypto.adapter.protocols';
 
@@ -13,26 +17,34 @@ export class CreateUserUseCase implements CreateUser {
     private readonly createUserRepository: CreateUserRepository
   ) {}
 
-  async create(data: CreateUserModel): Promise<UserModel> {
-    const hashedPassword = await this.hasher.hash(data.password);
-    const uuid = this.uuid.generateUniqueId();
-    const length = 6;
-    const confirmationCode = this.confirmationCode.generateConfirmationCode(length);
-    const userData = this.prepareUserData(data, hashedPassword, uuid, confirmationCode);
+  async create(userData: CreateUserModel): Promise<UserModel> {
+    const hashedPassword = await this.hashPassword(userData.password);
+    const uuid = this.generateUuid();
+    const confirmationCode = this.generateConfirmationCode();
+    const sensitiveInfo = { id: uuid, password: hashedPassword, confirmationCode };
+    const data = this.prepareUserData(userData, sensitiveInfo);
 
-    return await this.createUserRepository.create(userData);
+    return await this.createUserRepository.create(data);
   }
 
-  private prepareUserData(
-    originalUserData: CreateUserModel,
-    hashedPassword: string,
-    uuid: string,
-    confirmationCode: string
-  ) {
+  private async hashPassword(password: string) {
+    return await this.hasher.hash(password);
+  }
+
+  private generateUuid() {
+    return this.uuid.generateUniqueId();
+  }
+
+  private generateConfirmationCode() {
+    const length = 6;
+    return this.confirmationCode.generateConfirmationCode(length);
+  }
+
+  private prepareUserData(originalUserData: CreateUserModel, sensitiveInfo: SensitiveInfoModel) {
     const userData = Object.assign({}, originalUserData, {
-      id: uuid,
-      password: hashedPassword,
-      confirmationCode,
+      id: sensitiveInfo.id,
+      password: sensitiveInfo.password,
+      confirmationCode: sensitiveInfo.confirmationCode,
     });
 
     return userData;
