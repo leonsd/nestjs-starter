@@ -54,6 +54,7 @@ const makeCreateUserRepository = () => {
 describe('CreateUser UseCase', () => {
   let createUserUseCase: CreateUser;
   let hasher: Hasher;
+  let uuid: UUID;
   let createUserRepository: CreateUserRepository;
 
   beforeEach(async () => {
@@ -80,6 +81,7 @@ describe('CreateUser UseCase', () => {
 
     createUserUseCase = app.get<CreateUser>(CreateUser);
     hasher = app.get<Hasher>(Hasher);
+    uuid = app.get<UUID>(UUID);
     createUserRepository = app.get<CreateUserRepository>(CreateUserRepository);
   });
 
@@ -109,6 +111,14 @@ describe('CreateUser UseCase', () => {
 
       const promise = createUserUseCase.create(data);
       await expect(promise).rejects.toThrow();
+    });
+
+    it('should calls uuid.generate', async () => {
+      const data = makeFakeUserData();
+      const generateSpy = jest.spyOn(uuid, 'generate');
+
+      await createUserUseCase.create(data);
+      expect(generateSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
